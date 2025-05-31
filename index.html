@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Convertisseur d’images → 1080x1080</title>
+  <title>Convertisseur d’images 32x32 → 1080x1080</title>
   <style>
     body {
       font-family: sans-serif;
@@ -25,7 +25,7 @@
   </style>
 </head>
 <body>
-  <h1>🖼️ Convertisseur d’images → 1080x1080</h1>
+  <h1>🖼️ Convertisseur d’images 32x32 → 1080x1080</h1>
   <input type="file" id="imageInput" multiple accept="image/*">
   <br>
   <button onclick="convertAndDownload()">Convertir et Télécharger ZIP</button>
@@ -44,13 +44,13 @@
 
         const img = await loadImage(file);
         const canvas = document.createElement('canvas');
-        canvas.width = 4000;
-        canvas.height = 4000;
+        canvas.width = 1080;
+        canvas.height = 1080;
         const ctx = canvas.getContext('2d');
 
         // Dessine l'image centrée dans un carré 1080x1080
         ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(img, 0, 0, 4000 4000);
+        ctx.drawImage(img, 0, 0, 1080, 1080);
 
         const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
         zip.file(`image_${i + 1}.png`, blob);
@@ -59,7 +59,7 @@
       const content = await zip.generateAsync({ type: 'blob' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(content);
-      link.download = 'images_4000x4000.zip';
+      link.download = 'images_1080x1080.zip';
       link.click();
     }
 
