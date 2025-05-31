@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Convertisseur d’images 32x32 → 1080x1080</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #111;
+      color: white;
+    }
+    input[type="file"] {
+      margin: 20px 0;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: crimson;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🖼️ Convertisseur d’images 32x32 → 1080x1080</h1>
+  <input type="file" id="imageInput" multiple accept="image/*">
+  <br>
+  <button onclick="convertAndDownload()">Convertir et Télécharger ZIP</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+  <script>
+    async function convertAndDownload() {
+      const files = document.getElementById('imageInput').files;
+      if (files.length === 0) return alert("Importe au moins une image !");
+      if (files.length > 1000) return alert("Maximum 1000 images !");
+
+      const zip = new JSZip();
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
+        const img = await loadImage(file);
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1080;
+        const ctx = canvas.getContext('2d');
+
+        // Dessine l'image centrée dans un carré 1080x1080
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(img, 0, 0, 1080, 1080);
+
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+        zip.file(`image_${i + 1}.png`, blob);
+      }
+
+      const content = await zip.generateAsync({ type: 'blob' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(content);
+      link.download = 'images_1080x1080.zip';
+      link.click();
+    }
+
+    function loadImage(file) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = URL.createObjectURL(file);
+      });
+    }
+  </script>
+</body>
+</html>
